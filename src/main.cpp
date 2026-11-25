@@ -11,9 +11,10 @@ void setup()
 
 void loop()
 {
-  char scanChar = keypad.scan();
-  if (scanChar != '\0')
-  {
+  keypad.update(millis());
+
+  char scanChar = keypad.getKey();
+  if (scanChar != '\0') {
     Serial.println(scanChar);
   }
 }
