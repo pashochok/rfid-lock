@@ -1,6 +1,6 @@
 #include "Keypad.h"
 #include <Arduino.h>
-#include "pins.h"
+
 namespace
 {
     const char KEYMAP[4][3] = {
@@ -9,25 +9,29 @@ namespace
         {'7', '8', '9'},
         {'*', '0', '#'}};
 }
-
+Keypad::Keypad(const uint8_t *rows, const uint8_t *cols)
+{
+    rows_ = rows;
+    cols_ = cols;
+};
 void Keypad::begin()
 {
-    for (uint8_t p : KEYPAD_ROWS)
-        pinMode(p, INPUT_PULLUP);
-    for (uint8_t p : KEYPAD_COLS)
-        pinMode(p, INPUT_PULLUP);
-}
+    for (uint8_t i = 0; i < ROWS; i++)
+        pinMode(rows_[i], INPUT_PULLUP);
+    for (uint8_t i = 0; i < COLS; i++)
+        pinMode(cols_[i], INPUT_PULLUP);
+};
 
 char Keypad::scan()
 {
     for (uint8_t i = 0; i < 4; i++)
     {
-        uint8_t rowPin = KEYPAD_ROWS[i];
+        uint8_t rowPin = rows_[i];
         pinMode(rowPin, OUTPUT);
         digitalWrite(rowPin, LOW);
         for (uint8_t j = 0; j < 3; j++)
         {
-            uint8_t colPin = KEYPAD_COLS[j];
+            uint8_t colPin = cols_[j];
             if (digitalRead(colPin) == LOW)
             {
                 pinMode(rowPin, INPUT_PULLUP);
@@ -42,7 +46,7 @@ char Keypad::scan()
 void Keypad::update(uint32_t now)
 {
     char raw = scan();
-   
+
     if (raw != candidate_)
     {
         candidate_ = raw;
@@ -60,12 +64,13 @@ void Keypad::update(uint32_t now)
     }
 }
 
-
-
 char Keypad::getKey()
 {
-  if(pressedEvent_ == false) {return '\0';}
+    if (pressedEvent_ == false)
+    {
+        return '\0';
+    }
 
-  pressedEvent_ = false;  // віддали, скинули
-  return stable_;
+    pressedEvent_ = false; // віддали, скинули
+    return stable_;
 }
