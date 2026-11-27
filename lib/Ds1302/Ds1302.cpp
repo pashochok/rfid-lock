@@ -17,28 +17,64 @@ void Ds1302::begin()
     digitalWrite(sclk_, LOW);
 };
 
-uint8_t Ds1302::bcdToDec(uint8_t bcd)   
+DateTime Ds1302::now()
+{
+    DateTime d;
+    d.second = seconds();
+    d.year = year();
+    d.month = mounth();
+    d.day = day();
+    d.hour = hours();
+    d.minute = minutes();
+    return d;
+}
+uint8_t Ds1302::bcdToDec(uint8_t bcd)
 {
     int8_t tens = (bcd >> 4) & 0x0F;
     int8_t seconds = bcd & 0x0F;
-    return tens*10 + seconds;
+    return tens * 10 + seconds;
 }
 
 uint8_t Ds1302::seconds()
 {
-    uint8_t value = readRegister(0x81);   
+    uint8_t value = readRegister(0x81);
     uint8_t raw = value & 0x7F;
     return bcdToDec(raw);
 };
 
 uint8_t Ds1302::minutes()
 {
-    uint8_t value = readRegister(0x83);   
-    uint8_t raw = value &  0x7F;
+    uint8_t value = readRegister(0x83);
+    uint8_t raw = value & 0x7F;
     return bcdToDec(raw);
 };
 
+uint8_t Ds1302::hours()
+{
+    uint8_t value = readRegister(0x85);
+    uint8_t raw = value & 0x3F;
+    return bcdToDec(raw);
+};
 
+uint8_t Ds1302::day()
+{
+    uint8_t value = readRegister(0x87);
+    uint8_t raw = value & 0x3F;
+    return bcdToDec(raw);
+};
+
+uint8_t Ds1302::mounth()
+{
+    uint8_t value = readRegister(0x89);
+    uint8_t raw = value & 0x1F;
+    return bcdToDec(raw);
+};
+
+uint16_t Ds1302::year()
+{
+    uint8_t value = readRegister(0x8D);
+    return bcdToDec(value) + 2000;
+};
 
 uint8_t Ds1302::readRegister(uint8_t cmd)
 {
@@ -70,10 +106,9 @@ uint8_t Ds1302::readByte()
         if (digitalRead(oi_) == HIGH)
         {
             value |= (1 << i);
-           
         };
-         digitalWrite(sclk_, HIGH);
-            digitalWrite(sclk_, LOW);
+        digitalWrite(sclk_, HIGH);
+        digitalWrite(sclk_, LOW);
     }
     return value;
 };

@@ -24,12 +24,13 @@ void loop()
   keypad.update(millis());
   lock.update(millis());
   uint32_t now = millis();
+  char buffer[20];
   if (now - lastPrint >= 1000)
   {
     lastPrint += 1000;
-    Serial.print(ds1302.minutes());
-    Serial.print(':');
-    Serial.println(ds1302.seconds());
+    DateTime date = ds1302.now();
+    snprintf(buffer, sizeof(buffer), "%u-%02u-%02u %02u:%02u:%02u", date.year, date.month, date.day, date.hour, date.minute, date.second);
+    Serial.println(buffer);
   }
 
   char scanChar = keypad.getKey();
