@@ -2,23 +2,32 @@
 #include "pins.h"
 #include "Keypad.h"
 #include "Lock.h"
+#include "Ds1302.h"
 
 Keypad keypad(KEYPAD_ROWS, KEYPAD_COLS);
+Ds1302 ds1302(DS1302_CE, DS1302_SCLK, DS1302_IO);
 Lock lock(SERVO_PIN, SERVO_OPEN_TIME);
 const uint8_t PIN_MAX = 4;
 char pin[PIN_MAX + 1];
 uint8_t len = 0;
+uint32_t lastPrint = 0;
 void setup()
 {
   Serial.begin(9600);
   keypad.begin();
   lock.begin();
+  ds1302.begin();
 }
 
 void loop()
 {
   keypad.update(millis());
   lock.update(millis());
+  uint32_t now = millis();
+  if (now - lastPrint >= 1000) {
+        lastPrint += 1000;
+        Serial.println(ds1302.readRegister(0x81), HEX);
+  }
 
   char scanChar = keypad.getKey();
   if (scanChar != '\0')
