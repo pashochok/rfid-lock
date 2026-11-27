@@ -24,9 +24,12 @@ void loop()
   keypad.update(millis());
   lock.update(millis());
   uint32_t now = millis();
-  if (now - lastPrint >= 1000) {
-        lastPrint += 1000;
-        Serial.println(ds1302.readRegister(0x81), HEX);
+  if (now - lastPrint >= 1000)
+  {
+    lastPrint += 1000;
+    Serial.print(ds1302.minutes());
+    Serial.print(':');
+    Serial.println(ds1302.seconds());
   }
 
   char scanChar = keypad.getKey();

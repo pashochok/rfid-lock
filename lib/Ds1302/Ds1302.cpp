@@ -17,6 +17,27 @@ void Ds1302::begin()
     digitalWrite(sclk_, LOW);
 };
 
+uint8_t Ds1302::bcdToDec(uint8_t bcd)   
+{
+    int8_t tens = (bcd >> 4) & 0x0F;
+    int8_t seconds = bcd & 0x0F;
+    return tens*10 + seconds;
+}
+
+uint8_t Ds1302::seconds()
+{
+    uint8_t value = readRegister(0x81);   
+    uint8_t raw = value & 0x7F;
+    return bcdToDec(raw);
+};
+
+uint8_t Ds1302::minutes()
+{
+    uint8_t value = readRegister(0x83);   
+    uint8_t raw = value &  0x7F;
+    return bcdToDec(raw);
+};
+
 
 
 uint8_t Ds1302::readRegister(uint8_t cmd)

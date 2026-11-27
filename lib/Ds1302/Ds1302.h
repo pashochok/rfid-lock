@@ -7,6 +7,8 @@ public:
     Ds1302(uint8_t ce, uint8_t sclk, uint8_t oi);
     void begin();
     uint8_t readRegister(uint8_t cmd);
+    uint8_t seconds();
+    uint8_t minutes();
     uint8_t ce_;
     uint8_t sclk_;
     uint8_t oi_;
@@ -14,5 +16,6 @@ public:
 
 private:
     void writeByte(uint8_t b);
+    uint8_t bcdToDec(uint8_t bcd);
     uint8_t readByte();
 };
